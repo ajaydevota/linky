@@ -1,6 +1,5 @@
 import logging
 import re
-import os
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder, MessageHandler, ChatMemberHandler,
@@ -11,26 +10,26 @@ from telegram.error import TelegramError
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+BOT_TOKEN = "8829579785:AAH79xvOakNnmZFrouB8S1pchFFyj-ho4GY"
 
-warnings: dict = {}
+warnings = {}
 
 LINK_PATTERN = re.compile(
     r"(https?://\S+|www\.\S+|t\.me/\S+|@\w{5,}|\S+\.(com|net|org|io|xyz|site|online|info|co)\S*)",
     re.IGNORECASE
 )
 
-def has_link(text: str) -> bool:
+def has_link(text):
     return bool(LINK_PATTERN.search(text)) if text else False
 
-async def is_admin(update: Update, context: ContextTypes.DEFAULT_TYPE, user_id: int) -> bool:
+async def is_admin(update, context, user_id):
     try:
         member = await context.bot.get_chat_member(update.effective_chat.id, user_id)
         return member.status in ("administrator", "creator")
     except TelegramError:
         return False
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_message(update, context):
     msg = update.effective_message
     chat = update.effective_chat
     user = update.effective_user
@@ -81,7 +80,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except TelegramError as e:
             logger.warning(f"Ban failed: {e}")
 
-async def handle_new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_new_member(update, context):
     result = update.chat_member
     if not result:
         return
@@ -107,7 +106,7 @@ async def handle_new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except TelegramError as e:
         logger.warning(f"Bio scan failed: {e}")
 
-async def handle_bio_check(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_bio_check(update, context):
     msg = update.effective_message
     user = update.effective_user
     chat = update.effective_chat
